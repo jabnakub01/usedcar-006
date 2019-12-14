@@ -1,7 +1,28 @@
 <?php
     session_start();
+    if(isset($_GET['pid'])){
+        $pid = $_GET['pid'];
+    }
+    else{
+        header("Location: index.php");
+    }
     include("connect.php");
+    $sql = "SELECT * FROM car WHERE id=$pid";
+    $result = $con->query($sql);
+    if(!$result){
+        echo "Error: " . $con->error;
+    }
+    else{
+        if($result->num_rows>0){
+            $prd = $result->fetch_object();
+        }
+        else{
+            $prd = NULL;
+        }
+    }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,7 +73,7 @@
 
 </head>
 <body>
-<nav class="navbar navbar-default">
+
 <div id="wrapper">
 
     <!-- Navigation -->
@@ -109,56 +130,17 @@
                     }
                     ?>
         </ul>
-        </nav>
-        <!-- Sidebar -->
-        <div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li class="text-center">
-                        <a href="#s">รถยนต์ของเรา</a>
-                    </li>
-                    <li>
-                        <a href="#" class="active"><i class="fa fa-car fa-fw"></i> รถทุกประเภท</a>
-                    </li>
-                    <li>
-                        <a href="showproduct.php?cat=1" class="active"><i class="fa fa-car fa-fw"></i> รถเก๋ง</a>
-                    </li>
-                    <li>
-                        <a href="showproduct.php?cat=2" class="active"><i class="fa fa-truck fa-fw"></i> รถกระบะ</a>
-                    </li>
-                    <li>
-                        <a href="showproduct.php?cat=3" class="active"><i class="fa fa-truck fa-fw"></i> รถตู้</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </nav>
-
-<!-- Test -->
-<!-- Page Content -->
-
-    <?php
-        if(isset($_SESSION['id'])){
-    ?>
-<div class="container">
+    <div class="container">
         <div class="row">
-        <?php
-            $sql = "SELECT * FROM car ORDER BY id";
-            $result = $con->query($sql);
-                    if(!$result){
-                        echo "ERROR ";
-                    }
-                    else{
-                while($prd=$result->fetch_object()){
-                    //$prd->id; //$prd["id"];
-        ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                    <a href="productdetail.php?pid=<?php echo $prd->id; ?>">
-                        <img src="image/cars/<?php echo $prd->carpic; ?>" alt="">
-                    </a>
-                        <div class="caption">
-                            <h3><?php echo $prd->brand; ?></h3>
+        <h2 class="text-center"><?php echo $prd->brand;?></h2>
+            <div class="col-md-6 col-sm-12">
+                <div class="thumbnail">
+                    <img src="image/cars/<?php echo $prd->carpic; ?>" alt="">
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+            <h3><?php echo $prd->brand; ?></h3>
                                 <p><?php echo $prd->model; ?></p>
                                 <p><?php echo $prd->color; ?></p>
                                 <p><?php echo $prd->license; ?></p>
@@ -167,60 +149,15 @@
                                 <p>
                                     <strong>Price: <?php echo $prd->price ?></strong>
                                 </p>
-                                <p>
-                                    <a href="#" class="btn btn-success">
-                                        <i class="glyphicon glyphicon-shopping-cart"></i>
-                                    </a>
-                                    <a href="editproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-waring">
-                                        <i class="glyphicon glyphicon-pencil"></i> 
-                                    </a>
-                                    <a href="deleteproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-danger lnkDelete">
-                                        <i class="glyphicon glyphicon-trash" id="lnkDelete"></i> 
-                                    </a>
-                                </p>
-                        </div>
-                    </div>
-                </div>
-            <?php
-                }
-            }
-            ?>
-                
-        </div>
-    </div>
-    <?php
-    }
-    else{
-        ?>
-
-    <div id="page-wrapper">
-        <div class="container-fluid">
-        <?php
-                include("main.php");
-            ?>           
-
+                <p>
+                    <a href="" class="btn btn-primary">Buy Now!</a>
+                    <a href="" class="btn btn-info">Add to basket</a>
+                </p>
+            </div>
         </div>
     </div>
 
-        <?php
-        }
-        ?>
-    <script>
-        $(document).ready(function(){
-        $(".lnkDelete").click(function(){
-            if(confirm("Confirm delete?")){
-                return true;
-            }else{
-                return false;
-            }
-            //return confirm("Confirm Delete");
-            });
-        });
-
-    </script>
-
-    
-
-
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </body>
 </html>

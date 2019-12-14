@@ -1,6 +1,26 @@
 <?php
     session_start();
     include("connect.php");
+    if(!isset($_GET['pid'])||$_GET['pid']==""){
+        header("Location: index.php");
+    }
+    else{
+        $pid = $_GET['pid'];
+    }
+    $sql="SELECT * FROM car WHERE id =$pid";
+    $result = $con->query($sql);
+    if(!$result){
+        echo "Error : " .$con->error;
+    }
+    else{
+        if($result->num_rows>0){
+            $prd =$result->fetch_object();
+        }
+        else{
+            $prd=NULL;
+        }
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,106 +141,76 @@
                         <a href="#" class="active"><i class="fa fa-car fa-fw"></i> รถทุกประเภท</a>
                     </li>
                     <li>
-                        <a href="showproduct.php?cat=1" class="active"><i class="fa fa-car fa-fw"></i> รถเก๋ง</a>
+                        <a href="#" class="active"><i class="fa fa-car fa-fw"></i> รถเก๋ง</a>
                     </li>
                     <li>
-                        <a href="showproduct.php?cat=2" class="active"><i class="fa fa-truck fa-fw"></i> รถกระบะ</a>
+                        <a href="#" class="active"><i class="fa fa-truck fa-fw"></i> รถกระบะ</a>
                     </li>
                     <li>
-                        <a href="showproduct.php?cat=3" class="active"><i class="fa fa-truck fa-fw"></i> รถตู้</a>
+                        <a href="#" class="active"><i class="fa fa-truck fa-fw"></i> รถตู้</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-<!-- Test -->
-<!-- Page Content -->
-
-    <?php
-        if(isset($_SESSION['id'])){
-    ?>
 <div class="container">
-        <div class="row">
-        <?php
-            $sql = "SELECT * FROM car ORDER BY id";
-            $result = $con->query($sql);
-                    if(!$result){
-                        echo "ERROR ";
-                    }
-                    else{
-                while($prd=$result->fetch_object()){
-                    //$prd->id; //$prd["id"];
-        ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                    <a href="productdetail.php?pid=<?php echo $prd->id; ?>">
-                        <img src="image/cars/<?php echo $prd->carpic; ?>" alt="">
-                    </a>
-                        <div class="caption">
-                            <h3><?php echo $prd->brand; ?></h3>
-                                <p><?php echo $prd->model; ?></p>
-                                <p><?php echo $prd->color; ?></p>
-                                <p><?php echo $prd->license; ?></p>
-                                <p><?php echo $prd->province; ?></p>
-                                <p><?php echo $prd->modelYear; ?></p>
-                                <p>
-                                    <strong>Price: <?php echo $prd->price ?></strong>
-                                </p>
-                                <p>
-                                    <a href="#" class="btn btn-success">
-                                        <i class="glyphicon glyphicon-shopping-cart"></i>
-                                    </a>
-                                    <a href="editproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-waring">
-                                        <i class="glyphicon glyphicon-pencil"></i> 
-                                    </a>
-                                    <a href="deleteproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-danger lnkDelete">
-                                        <i class="glyphicon glyphicon-trash" id="lnkDelete"></i> 
-                                    </a>
-                                </p>
-                        </div>
+    <h2>Edit Product</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="thumbnail">
+                <img src="image/cars/<?php echo $prd->carpic; ?>" alt="">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form action="updateproduct.php" class="form-horizontal" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="brand" class="control-label col-md-3">Brand:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="txtName" class="form-control" value="<?php echo $prd->brand;?>">
                     </div>
                 </div>
-            <?php
-                }
-            }
-            ?>
-                
+
+                <div class="form-group">
+                    <label for="model" class="control-label col-md-3">Model:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="txtModel" class="form-control" value="<?php echo $prd->model;?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="color" class="control-label col-md-3">Color:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="txtColor" class="form-control" value="<?php echo $prd->color;?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="price" class="control-label col-md-3">ราคา:</label>
+                    <div class="col-md-9">
+                        <input type="text" name="txtPrice" class="form-control" value="<?php echo $prd->price;?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="picture" class="control-label col-md-3">Car Picture:</label>
+                    <div class="col-md-9">
+                        <input type="file" name="filepic" class="form-control-file" accept="image/*">  
+                    </div>
+                        
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <input type="hidden" name="hdnProductId" value="<?php echo $prd->id;?>">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                    </div>
+                </div>
+
+            </form>
+            </div>
         </div>
     </div>
-    <?php
-    }
-    else{
-        ?>
-
-    <div id="page-wrapper">
-        <div class="container-fluid">
-        <?php
-                include("main.php");
-            ?>           
-
-        </div>
-    </div>
-
-        <?php
-        }
-        ?>
-    <script>
-        $(document).ready(function(){
-        $(".lnkDelete").click(function(){
-            if(confirm("Confirm delete?")){
-                return true;
-            }else{
-                return false;
-            }
-            //return confirm("Confirm Delete");
-            });
-        });
-
-    </script>
-
-    
-
-
 </body>
 </html>

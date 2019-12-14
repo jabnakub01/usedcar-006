@@ -1,6 +1,25 @@
 <?php
     session_start();
+    if(isset($_GET['cat'])){
+        $category = $_GET['cat'];
+    }
+    else{
+        header("Location: index.php");
+    }
     include("connect.php");
+    $sql = "SELECT * FROM car WHERE category=$category";
+    $result = $con->query($sql);
+    if(!$result){
+        echo "Error: " . $con->error;
+    }
+    else{
+        if($result->num_rows>0){
+            $prd = $result->fetch_object();
+        }
+        else{
+            $prd = NULL;
+        }
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,93 +153,40 @@
         </div>
     </nav>
 
-<!-- Test -->
-<!-- Page Content -->
-
-    <?php
-        if(isset($_SESSION['id'])){
-    ?>
-<div class="container">
+    <!-- Page Content -->
+    <div class="container">
         <div class="row">
         <?php
-            $sql = "SELECT * FROM car ORDER BY id";
+            $sql = "SELECT * FROM car WHERE category=$category";
             $result = $con->query($sql);
-                    if(!$result){
-                        echo "ERROR ";
-                    }
-                    else{
                 while($prd=$result->fetch_object()){
                     //$prd->id; //$prd["id"];
         ?>
                 <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                     <div class="thumbnail">
                     <a href="productdetail.php?pid=<?php echo $prd->id; ?>">
-                        <img src="image/cars/<?php echo $prd->carpic; ?>" alt="">
+                        <img src="image/cars/<?php echo $prd->picture; ?>" alt="">
                     </a>
                         <div class="caption">
-                            <h3><?php echo $prd->brand; ?></h3>
+                            <h3><?php echo $prd->name; ?></h3>
                                 <p><?php echo $prd->model; ?></p>
-                                <p><?php echo $prd->color; ?></p>
-                                <p><?php echo $prd->license; ?></p>
-                                <p><?php echo $prd->province; ?></p>
-                                <p><?php echo $prd->modelYear; ?></p>
                                 <p>
                                     <strong>Price: <?php echo $prd->price ?></strong>
                                 </p>
                                 <p>
-                                    <a href="#" class="btn btn-success">
-                                        <i class="glyphicon glyphicon-shopping-cart"></i>
-                                    </a>
-                                    <a href="editproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-waring">
-                                        <i class="glyphicon glyphicon-pencil"></i> 
-                                    </a>
-                                    <a href="deleteproduct.php?pid=<?php echo $prd->id ?>" class="btn btn-danger lnkDelete">
-                                        <i class="glyphicon glyphicon-trash" id="lnkDelete"></i> 
-                                    </a>
+                                    <a href="#" class="btn btn-success">Add to basket</a>
                                 </p>
                         </div>
                     </div>
                 </div>
             <?php
-                }
+                
             }
             ?>
                 
         </div>
     </div>
-    <?php
-    }
-    else{
-        ?>
 
-    <div id="page-wrapper">
-        <div class="container-fluid">
-        <?php
-                include("main.php");
-            ?>           
-
-        </div>
-    </div>
-
-        <?php
-        }
-        ?>
-    <script>
-        $(document).ready(function(){
-        $(".lnkDelete").click(function(){
-            if(confirm("Confirm delete?")){
-                return true;
-            }else{
-                return false;
-            }
-            //return confirm("Confirm Delete");
-            });
-        });
-
-    </script>
-
-    
-
-
+</div>
 </body>
 </html>

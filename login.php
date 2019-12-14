@@ -1,75 +1,81 @@
 <?php
     session_start();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 
-        <title>Soi 5 Used Car| Login</title>
+</head>
+<body>
 
-        <!-- Bootstrap Core CSS -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+    <?php
+        include_once("connect.php");
+        if(isset($_POST['submit'])){
+            //mysqli_escapre_string =>ป้องกันการถูก SQL Injection
+            $username = $con->real_escape_string($_POST['username']);
+            $password = md5($con->real_escape_string($_POST['password']));
 
-        <!-- MetisMenu CSS -->
-        <link href="css/metisMenu.min.css" rel="stylesheet">
+            $sql = "SELECT * FROM customers WHERE username='$username' AND password='$password'";
 
-        <!-- Custom CSS -->
-        <link href="css/startmin.css" rel="stylesheet">
+            //mysql_suqry
+            $result = $con->query($sql);
+            //print_r($result);
 
-        <!-- Custom Fonts -->
-        <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css">
+            if($result->num_rows>0){
+                //เก็บค่าลง Session
+                //Fetch data
+                $row=$result->fetch_array();
+                $_SESSION['id']=$row['id'];
+                $_SESSION["name"]=$row['firstname'] . " " . $row['lastname'];
+                $_SESSION['username']=$row['username'];
+                
+                //Warp Home
+                header("location: showproduct.php");
+            }
+        }
+    ?>
 
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
-    </head>
-    <body>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 col-md-offset-4">
-                    <div class="login-panel panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title text-center">Please Sign In</h3>
+    <div class="container">
+        <div class="row">
+            <form action="" method="post">
+                <div class="col-md-8 col-md-offset-2" style="margin-top:50px;">
+                    <div class="panel panel-info">
+                        <div class="panel-heading text-center">
+                            กรุณาเข้าสู่ระบบ
                         </div>
                         <div class="panel-body">
-                            <form role="form">
-                                <fieldset>
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
-                                    </div>
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="Password" name="password" type="password" value="">
-                                    </div>
-                                    <!-- Change this to a button or input when using this as a form -->
-                                    <button class="btn btn-lg btn-success btn-block">Login</button>
-                                </fieldset>
-                            </form>
+
+                            <div class="form-group row">
+                                <label for="username" class="col-md-3">Username : </label>
+                                <div class="col-md-9">
+                                    <input type="text" name="username" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="password" class="col-md-3">Password : </label>
+                                <div class="col-md-9">
+                                    <input type="password" name="password" class="form-control">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-success btn-block" name="submit">Login</button>
                         </div>
                     </div>
-                </div>
-            </div>
+            </form>
         </div>
+    </div>
 
-        <!-- jQuery -->
-        <script src="js/jquery.min.js"></script>
-
-        <!-- Bootstrap Core JavaScript -->
-        <script src="js/bootstrap.min.js"></script>
-
-        <!-- Metis Menu Plugin JavaScript -->
-        <script src="js/metisMenu.min.js"></script>
-
-        <!-- Custom Theme JavaScript -->
-        <script src="js/startmin.js"></script>
-
-    </body>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
 </html>
